@@ -25,7 +25,11 @@ const searchEvents = async (req, res) => {
 
 const getAllEvents = async (req, res) => {
   try {
-    const results = await Event.find();
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const results = await Event.find({event_date: { $gt: today}
+    });
     res.status(200).json(results);
   } catch (err) {
     res.status(500).json({ message: 'Error fetching events' });

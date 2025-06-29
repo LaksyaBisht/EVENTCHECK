@@ -57,8 +57,8 @@ const getRegistrationsByEvent = async (req, res) => {
 
 const getHistory = async (req, res) => {
   try {
-    const email = req.user.email;
-    const events = await registerEvents.find({ email: email });
+    const userID = req.user?.id;
+    const events = await registerEvents.find({ userId: userID }).populate('event');
     res.status(200).json({ success: true, events });
   } catch (error) {
     res.status(500).json({ success: false, message: "Server error" });
