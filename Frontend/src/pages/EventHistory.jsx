@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Calendar, MapPin, Users, Clock, History } from 'lucide-react';
+import { Calendar, MapPin, Users, History } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { getUserRegistrations } from '../utils/api';
 import Navbar from '../components/Navbar';
 
 const EventHistory = () => {
-  const { user } = useAuth();
   const [registrations, setRegistrations] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -16,8 +15,9 @@ const EventHistory = () => {
   const fetchRegistrations = async () => {
     try {
       setLoading(true);
-      const data = await getUserRegistrations(user.id);
-      setRegistrations(data);
+      const data = await getUserRegistrations();
+      console.log(data);
+      setRegistrations(data.events);
     } catch (error) {
       console.error('Error fetching registrations:', error);
     } finally {
@@ -32,17 +32,6 @@ const EventHistory = () => {
       year: 'numeric',
       month: 'long',
       day: 'numeric'
-    });
-  };
-
-  const formatTime = (timeString) => {
-    const [hours, minutes] = timeString.split(':');
-    const date = new Date();
-    date.setHours(parseInt(hours), parseInt(minutes));
-    return date.toLocaleTimeString('en-US', {
-      hour: 'numeric',
-      minute: '2-digit',
-      hour12: true
     });
   };
 
@@ -92,9 +81,9 @@ const EventHistory = () => {
           <div className="space-y-6">
             {registrations.map((registration) => (
               <div
-                key={registration.id}
+                key={registration._id}
                 className={`card p-6 ${
-                  isEventPast(registration.event.date) 
+                  isEventPast(registration.event.event_date) 
                     ? 'bg-gray-50 border-gray-200' 
                     : 'bg-white border-gray-200'
                 }`}
@@ -106,16 +95,16 @@ const EventHistory = () => {
                       {registration.event.poster && (
                         <img
                           src={registration.event.poster}
-                          alt={registration.event.name}
+                          alt={registration.event.event_name}
                           className="w-20 h-20 object-cover rounded-lg"
                         />
                       )}
                       <div className="flex-1">
                         <div className="flex items-center space-x-2 mb-2">
                           <h3 className="text-xl font-semibold text-gray-900">
-                            {registration.event.name}
+                            {registration.event.event_name}
                           </h3>
-                          {isEventPast(registration.event.date) && (
+                          {isEventPast(registration.event.event_date) && (
                             <span className="px-2 py-1 text-xs font-medium bg-gray-200 text-gray-700 rounded-full">
                               Past Event
                             </span>
@@ -128,15 +117,11 @@ const EventHistory = () => {
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm text-gray-600">
                           <div className="flex items-center">
                             <Calendar className="h-4 w-4 mr-2 text-primary-500" />
-                            <span>{formatDate(registration.event.date)}</span>
-                          </div>
-                          <div className="flex items-center">
-                            <Clock className="h-4 w-4 mr-2 text-primary-500" />
-                            <span>{formatTime(registration.event.time)}</span>
+                            <span>{formatDate(registration.event.event_date)}</span>
                           </div>
                           <div className="flex items-center">
                             <MapPin className="h-4 w-4 mr-2 text-primary-500" />
-                            <span>{registration.event.location}</span>
+                            <span>{registration.event.venue}</span>
                           </div>
                           <div className="flex items-center">
                             <Users className="h-4 w-4 mr-2 text-primary-500" />
@@ -169,7 +154,7 @@ const EventHistory = () => {
                         <div>
                           <span className="text-gray-600">Reg. No:</span>
                           <span className="ml-2 font-medium text-gray-900">
-                            {registration.regNo}
+                            {registration.registrationNum}
                           </span>
                         </div>
                         {registration.teamMembers && (
@@ -183,7 +168,7 @@ const EventHistory = () => {
                         <div className="pt-2 border-t border-primary-200">
                           <span className="text-gray-600">Registered on:</span>
                           <span className="ml-2 font-medium text-gray-900">
-                            {new Date(registration.registeredAt).toLocaleDateString()}
+                            {new Date(registration.register_at).toLocaleDateString()}
                           </span>
                         </div>
                       </div>

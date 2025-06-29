@@ -60,8 +60,14 @@ export const registerForEvent = async (event_name, registrationData) => {
   return res.data;
 };
 
-export const getUserRegistrations = async (userId) => {
-  
+export const getUserRegistrations = async () => {
+  try{
+    const res = await API.get('/history');
+    return res.data;
+  } catch (error) {
+    console.error('Error fetching user registrations:', error);
+    throw error;
+  }
 };
 
 

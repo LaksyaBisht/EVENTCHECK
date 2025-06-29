@@ -23,7 +23,7 @@ const Navbar = ({ onSearch }) => {
       { path: '/registrations', label: 'Registrations', icon: Users }
     ] : [
       { path: '/', label: 'Events', icon: Calendar },
-      { path: '/history', label: 'History', icon: History }
+      { path: '/history', label: 'MyRegistrations', icon: History }
     ]
   ) : [];
 
