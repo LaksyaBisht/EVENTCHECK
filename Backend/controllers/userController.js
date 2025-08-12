@@ -84,14 +84,14 @@ const loginUser = async (req, res) => {
   }
 };
 
-const profileVisit = async (req, res) => {
+const getMyProfile = async (req, res) => {
   try {
-    const username = req.params.username;
+    const userId = req.user.id;
 
-    const user = await User.findOne({ username: username });
+    const user = await User.findById(userId).select('-password -created_at ');
 
     if (!user) {
-      return res.status(404).json({ message: 'Profile not found' });
+      return res.status(404).json({ message: 'User not found' });
     }
 
     res.status(200).json(user);
@@ -102,23 +102,80 @@ const profileVisit = async (req, res) => {
 
 const profileChange = async (req, res) => {
   try {
-    const username = req.params.username;
-    const updatedProfileData = req.body;
+    const userId = req.user.id;
+    const updates = req.body;
 
-    // Update the user's profile in the database
-    const result = await User.findOneAndUpdate(
-      { username: username }, // Query to find the user by username
-      updatedProfileData,     // Data to update
-      { new: true }           // Option to return the updated document
+    const allowedUpdates = ['username', 'clubName'];
+    const requestedUpdates = Object.keys(updates);
+    const isValidOperation = requestedUpdates.every((field) =>
+      allowedUpdates.includes(field)
     );
 
-    if (!result) {
+    if (!isValidOperation) {
+      return res.status(400).json({
+        error: `Invalid update fields. Only ${allowedUpdates.join(', ')} can be updated.`,
+      });
+    }
+
+    const user = await User.findById(userId);
+    if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
 
-    res.status(200).json({ message: 'Profile updated successfully', updatedProfile: result });
+    if (updates.clubName && user.role !== 'admin') {
+      return res.status(403).json({
+        error: 'Only admins can set a club name.',
+      });
+    }
+
+    if (updates.username) {
+      const existingUser = await User.findOne({ username: updates.username });
+      if (existingUser && existingUser._id.toString() !== userId) {
+        return res.status(409).json({ error: 'Username is already taken.' });
+      }
+    }
+
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      updates,
+      {
+        new: true,           
+        runValidators: true, 
+      }
+    ).select('-password -created_at'); 
+
+    if (!updatedUser) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    res.status(200).json({
+      message: 'Profile updated successfully',
+      user: updatedUser,
+    });
   } catch (err) {
-    res.status(500).json({ error: 'Failed to update profile', details: err.message });
+    if (err.name === 'ValidationError') {
+      return res.status(400).json({ error: err.message });
+    }
+    console.error('Profile update error:', err);
+    res.status(500).json({
+      error: 'Failed to update profile',
+      details: err.message,
+    });
+  }
+};
+
+const profileVisit = async (req, res) => {
+  try {
+    const username = req.params.username;
+
+    const user = await User.findOne({username}).select('-password -created_at');
+
+    if(!user) {
+      return res.status(404).json({message: 'User not found'});
+    }
+    res.status(200).json(user);
+  } catch (err) {
+    res.status(500).json({ message: 'Error fetching profile details', error: err.message });
   }
 };
 
@@ -126,6 +183,7 @@ const profileChange = async (req, res) => {
 module.exports = {
   registerUser,
   loginUser,
-  profileVisit,
-  profileChange
+  getMyProfile,
+  profileChange, 
+  profileVisit
 };

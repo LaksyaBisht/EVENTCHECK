@@ -31,6 +31,21 @@ export const loginUser = async (email, password) => {
   };
 };
 
+export const getMyProfile = async () => {
+  const res = await API.get('/profile/me');
+  return res.data;
+}
+
+export const getProfileByUsername = async (username) =>{
+  const res = await API.get(`/profile/${username}`);
+  return res.data;
+}
+
+export const updateProfile = async (profileData) => {
+  const res = await API.put('/profile/me', profileData);
+  return res.data.user;
+}
+
 // Event APIs
 
 export const getEvents = async () => {

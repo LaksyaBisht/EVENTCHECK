@@ -8,12 +8,14 @@ const searchEvents = async (req, res) => {
   }
 
   try {
+    const now = new Date();
     const results = await Event.find({
       $or: [
         { event_name: new RegExp(query, 'i') },
         { club_name: new RegExp(query, 'i') },
         { event_description: new RegExp(query, 'i') }
-      ]
+      ],
+      event_date: { $gt: now }
     });
 
     res.status(200).json(results);

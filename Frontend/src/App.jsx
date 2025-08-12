@@ -11,6 +11,7 @@ import CreateEvent from './pages/CreateEvent';
 import Registrations from './pages/Registrations';
 import EventHistory from './pages/EventHistory';
 import NotFound from './pages/NotFound';
+import Profile from './pages/Profile';
 
 function App() {
   return (
@@ -21,6 +22,8 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
+          <Route path="/profile" element={<Profile />}/>
+          <Route path="/profile/:username" element={<Profile />}/>
 
           {/* Admin Only Routes */}
           <Route
