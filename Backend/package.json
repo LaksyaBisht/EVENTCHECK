@@ -8,6 +8,7 @@
     "jsonwebtoken": "^9.0.2",
     "mongodb": "^6.12.0",
     "mongoose": "^8.9.5",
+    "redis": "^5.8.2",
     "Router": "^2.1.0"
   },
   "name": "mongo-connection",

@@ -23,7 +23,7 @@ const Explore = () => {
       try {
         setLoading(true);
         const data = await getTrendingEvents(); 
-        setEvents(data.trendingEvents); 
+        setEvents(data); 
       } catch (error) {
         console.error('Error fetching trending events:', error);
       } finally {

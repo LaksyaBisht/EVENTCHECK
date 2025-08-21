@@ -120,7 +120,7 @@ export const searchEvents = async (query) => {
 export const getTrendingEvents = async () => {
   try {
     const response = await API.get('/trending');
-    return response.data;
+    return response.data.trendingEvents;
   } catch (error) {
     console.error('Error fetching trending events:', error);
     throw error;

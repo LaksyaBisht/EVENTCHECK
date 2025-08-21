@@ -1,5 +1,7 @@
 const registerEvents = require("../models/registerEventModel");
 const Event = require('../models/eventModel');
+const client = require('../lib/redis');
+const expiryTime = 15*60;
 
 
 const registerEvent = async (req, res) => {
@@ -113,6 +115,12 @@ const getTrendingEvents = async (req, res) => {
         },
       },
     ]);
+
+    const jsonEvents = JSON.stringify(trendingEvents);
+
+    await client.set('trendingEvents', jsonEvents, {
+      EX: expiryTime
+    });
     return res.status(200).json({success:true, trendingEvents});
   } catch (error) {
     console.error("Error fetching trending events:", error);

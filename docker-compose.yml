@@ -4,13 +4,16 @@ services:
       context: ./Backend
     ports: 
       - "3000:3000"
-    # environment: 
-    #   - MONGO_URI=${MONGO_URI}
     env_file:
       - ./Backend/.env
     volumes:
       - ./Backend:/app
       - /app/node_modules
+    depends_on:
+      - redis
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
     restart: unless-stopped
 
   frontend:
@@ -23,4 +26,11 @@ services:
       - /app/node_modules
     depends_on:
       - backend
+    restart: unless-stopped
+
+  redis:
+    image: "redis:latest"
+    container_name: redis-cache
+    ports:
+      - "6379:6379"
     restart: unless-stopped
