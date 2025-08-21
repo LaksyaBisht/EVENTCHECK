@@ -7,4 +7,6 @@ router.post("/register-event/:event_name", authenticateJWT, registerEventControl
 router.get("/registrations/:eventId", authenticateJWT, registerEventController.getRegistrationsByEvent);
 router.get("/history", authenticateJWT, registerEventController.getHistory);
 
+router.get('/trending', registerEventController.getTrendingEvents);
+
 module.exports = router;

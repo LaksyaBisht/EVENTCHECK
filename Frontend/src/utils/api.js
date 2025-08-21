@@ -116,3 +116,13 @@ export const searchEvents = async (query) => {
   const res = await API.get(`/search?q=${encodeURIComponent(query)}`);
   return res.data;
 };
+
+export const getTrendingEvents = async () => {
+  try {
+    const response = await API.get('/trending');
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching trending events:', error);
+    throw error;
+  }
+};

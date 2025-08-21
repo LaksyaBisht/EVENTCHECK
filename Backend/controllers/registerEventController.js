@@ -18,7 +18,7 @@ const registerEvent = async (req, res) => {
       registrationNum,
       phone,
       teamSize,
-      teamMembers: teamMembers || "",
+      teamMembers: teamMembers || '',
       userId: req.user?.id
     });
 
@@ -65,4 +65,59 @@ const getHistory = async (req, res) => {
   }
 };
 
-module.exports = { registerEvent, getRegistrationsByEvent, getHistory};
+const getTrendingEvents = async (req, res) => {
+  try {
+    const trendingEvents = await registerEvents.aggregate([
+       {
+        $lookup: {
+          from: "events",
+          localField: "event",
+          foreignField: "_id",
+          as: "eventDetails",
+        },
+      },
+      {
+        $unwind: "$eventDetails",
+      },
+      {
+        $match: {
+          "eventDetails.event_date": { $gt: new Date() },
+        },
+      },
+      {
+        $group: {
+          _id: "$event",
+          count: { $sum: 1 },
+          eventDetails: { $first: "$eventDetails" }
+        },
+      },
+      {
+        $sort: { count: -1 },
+      },
+      {
+        $limit: 5,
+      },
+      {
+        $project: {
+          _id: 0,
+          eventId: "$_id",
+          count: 1,
+          event_name: "$eventDetails.event_name",
+          event_date: "$eventDetails.event_date",
+          event_description: "$eventDetails.event_description",
+          club_name: "$eventDetails.club_name",
+          venue: "$eventDetails.venue",
+          poster: "$eventDetails.poster",
+          organizer_email: "$eventDetails.organizer_email",
+          team_size: "$eventDetails.team_size",
+        },
+      },
+    ]);
+    return res.status(200).json({success:true, trendingEvents});
+  } catch (error) {
+    console.error("Error fetching trending events:", error);
+    return res.status(500).json({ message: "Failed to fetch trending events", error: error.message });
+  }
+};
+
+module.exports = { registerEvent, getRegistrationsByEvent, getHistory, getTrendingEvents };

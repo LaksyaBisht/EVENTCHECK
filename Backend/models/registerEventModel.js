@@ -34,7 +34,6 @@ const registerEventSchema = new mongoose.Schema({
     },
     teamMembers: {
         type: String, 
-        required: true,
         maxlength: 255
     },
     userId: {

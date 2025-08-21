@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Search, Calendar, Plus, Users, History, LogOut, Menu, X, User, ChevronDown } from 'lucide-react';
+import { Compass, Calendar, Plus, Users, History, LogOut, Menu, X, User, ChevronDown } from 'lucide-react';
 import SearchBar from './SearchBar';
 
 const Navbar = ({ onSearch }) => {
@@ -13,7 +13,6 @@ const Navbar = ({ onSearch }) => {
   const profileMenuRef = useRef(null);
 
   const handleLogout = () => {
-    console.log("Hit logout button");
     logout();
     navigate('/');
     setIsMobileMenuOpen(false);
@@ -26,12 +25,12 @@ const Navbar = ({ onSearch }) => {
       { path: '/create-event', label: 'Create', icon: Plus },
       { path: '/registrations', label: 'Registrations', icon: Users }
     ] : [
+      { path: '/explore', label: 'Explore', icon: Compass},
       { path: '/', label: 'Events', icon: Calendar },
       { path: '/history', label: 'MyRegistrations', icon: History }
     ]
   ) : [];
 
-  // Close dropdowns when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (profileMenuRef.current && !profileMenuRef.current.contains(event.target)) {

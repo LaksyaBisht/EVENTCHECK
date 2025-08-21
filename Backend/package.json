@@ -8,7 +8,6 @@
     "jsonwebtoken": "^9.0.2",
     "mongodb": "^6.12.0",
     "mongoose": "^8.9.5",
-    "nodemon": "^3.1.9",
     "Router": "^2.1.0"
   },
   "name": "mongo-connection",
@@ -19,5 +18,8 @@
   },
   "author": "",
   "license": "ISC",
-  "description": ""
+  "description": "",
+  "devDependencies": {
+    "nodemon": "^3.1.10"
+  }
 }

@@ -12,6 +12,7 @@ import Registrations from './pages/Registrations';
 import EventHistory from './pages/EventHistory';
 import NotFound from './pages/NotFound';
 import Profile from './pages/Profile';
+import Explore from './pages/Explore';
 
 function App() {
   return (
@@ -44,6 +45,14 @@ function App() {
           />
 
           {/* Participant Only Routes */}
+          <Route
+            path="/explore"
+            element={
+              <PrivateRoute>
+                <Explore />
+              </PrivateRoute>
+            }
+          />
           <Route
             path="/history"
             element={
