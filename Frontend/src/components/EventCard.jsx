@@ -50,11 +50,6 @@ const EventCard = ({ event, onClick }) => {
           </p>
         </div>
 
-        {/* Description */}
-        <p className="text-gray-600 text-sm line-clamp-2">
-          {event.event_description}
-        </p>
-
         {/* Event Details */}
         <div className="space-y-2">
           <div className="flex items-center text-sm text-gray-500">

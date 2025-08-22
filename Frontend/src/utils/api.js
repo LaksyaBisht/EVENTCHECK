@@ -126,3 +126,16 @@ export const getTrendingEvents = async () => {
     throw error;
   }
 };
+
+export const generateEventDescription = async (prompt, eventName) => {
+  try {
+      const response = await API.post('/generate-description', {
+      prompt,
+      event_name: eventName
+      });
+    return response.data;
+  } catch (error) {
+    console.error('Error generating event desciption:', error);
+    throw error;
+  }
+};
