@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Calendar, Clock, MapPin, Users, Mail, Award, FileText, Image, Sparkles } from 'lucide-react';
+import { Calendar, Clock, MapPin, Users, Mail, Award, FileText, Image, Sparkles, Tag } from 'lucide-react';
 import { generateEventDescription } from '../utils/api';
 
 const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
@@ -20,7 +20,10 @@ const EventForm = ({ onSubmit, loading = false }) => {
     });
 
     const [errors, setErrors] = useState({});
-    const [isGenerating, setIsGenerating] = useState(false); 
+    const [isGenerating, setIsGenerating] = useState(false);
+    
+    const [tags, setTags] = useState([]);
+    const [tagInput, setTagInput] = useState('');
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -36,6 +39,24 @@ const EventForm = ({ onSubmit, loading = false }) => {
             }));
         }
     };
+    
+    const handleTagInputChange = (e) => {
+        setTagInput(e.target.value);
+    };
+
+    const handleAddTag = (e) => {
+        if (e.key === 'Enter' && tagInput.trim() !== '') {
+            e.preventDefault(); 
+            if (tags.length < 5) { 
+                setTags([...tags, tagInput.trim()]);
+                setTagInput(''); 
+            }
+        }
+    };
+
+    const handleRemoveTag = (tagToRemove) => {
+        setTags(tags.filter(tag => tag !== tagToRemove));
+    };
 
     const handleGenerateDescription = async () => {
         const eventName = formData.event_name;
@@ -50,7 +71,6 @@ const EventForm = ({ onSubmit, loading = false }) => {
 
         try {
             const data = await generateEventDescription(prompt, eventName);
-            console.log(data);
             
             setFormData(prev => ({
                 ...prev,
@@ -80,6 +100,7 @@ const EventForm = ({ onSubmit, loading = false }) => {
             newErrors.organizer_email = 'Invalid email';
         }
         if (formData.team_size < 1 || formData.team_size > 20) newErrors.team_size = 'Team size must be 1–20';
+        if (tags.length === 0) newErrors.tags = 'At least one tag is required';
 
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
@@ -117,6 +138,7 @@ const EventForm = ({ onSubmit, loading = false }) => {
             ...formData,
             event_date: new Date(`${formData.event_date}T${formData.time}`).toISOString(),
             poster: cloudinaryPosterUrl, 
+            tags: tags
         };
 
         delete finalData.time;
@@ -184,6 +206,39 @@ const EventForm = ({ onSubmit, loading = false }) => {
                         )}
                     </button>
                     {errors.event_description && <p className="text-red-500 text-xs mt-1">{errors.event_description}</p>}
+                </div>
+
+                <div>
+                    <label className="text-sm font-medium text-gray-700 mb-2 flex items-center">
+                        <Tag className="h-4 w-4 inline mr-1" /> Tags (3-5 keywords)
+                    </label>
+                    <div className={`input-field flex flex-wrap gap-2 p-2 ${errors.tags ? 'border-red-500' : ''}`}>
+                        {tags.map((tag, index) => (
+                            <div
+                                key={index}
+                                className="bg-purple-100 text-purple-700 text-xs font-medium px-2.5 py-1 rounded-full flex items-center"
+                            >
+                                {tag}
+                                <button
+                                    type="button"
+                                    onClick={() => handleRemoveTag(tag)}
+                                    className="ml-1 text-purple-500 hover:text-purple-700 focus:outline-none"
+                                >
+                                    &times;
+                                </button>
+                            </div>
+                        ))}
+                        <input
+                            type="text"
+                            value={tagInput}
+                            onChange={handleTagInputChange}
+                            onKeyDown={handleAddTag}
+                            className="bg-transparent flex-grow focus:outline-none"
+                            placeholder={tags.length === 0 ? "Add tags like 'AI', 'workshop', 'coding'" : ""}
+                            disabled={tags.length >= 5}
+                        />
+                    </div>
+                    {errors.tags && <p className="text-red-500 text-xs mt-1">{errors.tags}</p>}
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

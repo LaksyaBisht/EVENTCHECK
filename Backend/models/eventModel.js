@@ -8,7 +8,7 @@ const eventSchema = new mongoose.Schema({
   },
   event_date: { 
     type: Date, 
-    required: true 
+    required: true  
   },
   event_description: { 
     type: String 
@@ -49,6 +49,10 @@ const eventSchema = new mongoose.Schema({
   updated_at: { 
     type: Date, 
     default: Date.now 
+  },
+   tags: {
+    type: [String],
+    default:[]
   }
 });
 
