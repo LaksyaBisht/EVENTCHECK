@@ -1,22 +1,19 @@
-const express = require('express');
+import express from 'express';
+import { searchEvents, getAllEvents, getEventByName, createEvent, getAdminEvents, deleteEvent } from '../controllers/eventController.js';
+import { authenticateJWT } from '../middleware/authenticateJWT.js';
+
 const router = express.Router();
-const eventController = require('../controllers/eventController');
-const authenticateJWT = require('../middleware/authenticateJWT');
 
-// Search events
-router.get('/search', eventController.searchEvents);
+router.get('/search', searchEvents);
 
-// Get all events
-router.get('/event', eventController.getAllEvents);
+router.get('/event', getAllEvents);
 
-// Get event details
-router.get('/event/event-details/:event_name', authenticateJWT, eventController.getEventByName);
+router.get('/event/event-details/:event_name', authenticateJWT, getEventByName);
 
-// Create an event
-router.post('/event/create', authenticateJWT, eventController.createEvent);
+router.post('/event/create', authenticateJWT, createEvent);
 
-router.get('/admin-dashboard', authenticateJWT, eventController.getAdminEvents);
+router.get('/admin-dashboard', authenticateJWT, getAdminEvents);
 
-router.delete('/events/:event_name', authenticateJWT, eventController.deleteEvent);
+router.delete('/events/:event_name', authenticateJWT, deleteEvent);
 
-module.exports = router;
+export default router;

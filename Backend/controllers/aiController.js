@@ -1,9 +1,9 @@
-const {generate} = require('../lib/ai');
+import { generate } from '../lib/ai.js';
 
-const generateDescription = async (req, res) => {
+export const generateDescription = async (req, res) => {
     try {
         const { prompt, eventName } = req.body;
-        if(!prompt) {
+        if (!prompt) {
             return res.status(400).json({ message: 'Prompt is required' });
         }
 
@@ -12,16 +12,14 @@ const generateDescription = async (req, res) => {
         const description = await generate(realPrompt);
 
         return res.status(200).json({
-            succes: true, 
-            description 
+            succes: true,
+            description
         });
-    }   catch (error)   {
+    } catch (error) {
         console.error("Error generating description:", error);
-        return res.status(500).json({ 
-            success: false, 
-            message: "Failed to generate description. Please try again." 
+        return res.status(500).json({
+            success: false,
+            message: "Failed to generate description. Please try again."
         });
     }
 }
-
-module.exports = { generateDescription };

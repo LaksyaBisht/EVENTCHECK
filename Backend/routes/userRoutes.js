@@ -1,12 +1,17 @@
-const express = require('express');
+import express from 'express';
+import { registerUser, loginUser, getMyProfile, profileChange, profileVisit } from '../controllers/userController.js';
+import { authenticateJWT } from '../middleware/authenticateJWT.js';
+
 const router = express.Router();
-const userController = require('../controllers/userController');
-const authenticateJWT = require('../middleware/authenticateJWT');
 
-router.post('/register', userController.registerUser);
-router.post('/login', userController.loginUser);
-router.get('/profile/me', authenticateJWT, userController.getMyProfile);
-router.put('/profile/me', authenticateJWT, userController.profileChange);
-router.get('/profile/:username', userController.profileVisit);
+router.post('/register', registerUser);
 
-module.exports = router;
+router.post('/login', loginUser);
+
+router.get('/profile/me', authenticateJWT, getMyProfile);
+
+router.put('/profile/me', authenticateJWT, profileChange);
+
+router.get('/profile/:username', profileVisit);
+
+export default router;

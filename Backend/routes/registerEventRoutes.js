@@ -1,12 +1,16 @@
-const express = require('express');
+import express from 'express';
+import { registerEvent, getRegistrationsByEvent, getHistory, getTrendingEvents } from '../controllers/registerEventController.js';
+import { authenticateJWT } from '../middleware/authenticateJWT.js';
+import { cacheTrending } from '../middleware/cacheTrending.js';
+
 const router = express.Router();
-const registerEventController = require('../controllers/registerEventController');
-const authenticateJWT = require('../middleware/authenticateJWT');
 
-router.post("/register-event/:event_name", authenticateJWT, registerEventController.registerEvent);
-router.get("/registrations/:eventId", authenticateJWT, registerEventController.getRegistrationsByEvent);
-router.get("/history", authenticateJWT, registerEventController.getHistory);
+router.post("/register-event/:event_name", authenticateJWT, registerEvent);
 
-router.get('/trending', registerEventController.getTrendingEvents);
+router.get("/registrations/:eventId", authenticateJWT, getRegistrationsByEvent);
 
-module.exports = router;
+router.get("/history", authenticateJWT, getHistory);
+
+router.get('/trending', authenticateJWT, cacheTrending, getTrendingEvents);
+
+export default router;

@@ -1,10 +1,10 @@
-const registerEvents = require("../models/registerEventModel");
-const Event = require('../models/eventModel');
-const client = require('../lib/redis');
-const expiryTime = 15*60;
+import registerEvents from "../models/registerEventModel.js";
+import Event from "../models/eventModel.js";
+import { client } from '../lib/redis.js';
 
+const expiryTime = 15 * 60;
 
-const registerEvent = async (req, res) => {
+export const registerEvent = async (req, res) => {
   const event_name = req.params.event_name;
   try {
     const event = await Event.findOne({ event_name });
@@ -14,7 +14,7 @@ const registerEvent = async (req, res) => {
     const { name, email, registrationNum, phone, teamSize, teamMembers } = req.body;
 
     const newRegistration = new registerEvents({
-      event:event._id,
+      event: event._id,
       name,
       email,
       registrationNum,
@@ -38,9 +38,9 @@ const registerEvent = async (req, res) => {
   }
 };
 
-const getRegistrationsByEvent = async (req, res) => {
+export const getRegistrationsByEvent = async (req, res) => {
   const eventID = req.params.eventId;
-  
+
   try {
     const students = await registerEvents.find({ event: eventID });
 
@@ -57,7 +57,7 @@ const getRegistrationsByEvent = async (req, res) => {
   }
 };
 
-const getHistory = async (req, res) => {
+export const getHistory = async (req, res) => {
   try {
     const userID = req.user?.id;
     const events = await registerEvents.find({ userId: userID }).populate('event');
@@ -67,10 +67,10 @@ const getHistory = async (req, res) => {
   }
 };
 
-const getTrendingEvents = async (req, res) => {
+export const getTrendingEvents = async (req, res) => {
   try {
     const trendingEvents = await registerEvents.aggregate([
-       {
+      {
         $lookup: {
           from: "events",
           localField: "event",
@@ -121,11 +121,9 @@ const getTrendingEvents = async (req, res) => {
     await client.set('trendingEvents', jsonEvents, {
       EX: expiryTime
     });
-    return res.status(200).json({success:true, trendingEvents});
+    return res.status(200).json({ success: true, trendingEvents });
   } catch (error) {
     console.error("Error fetching trending events:", error);
     return res.status(500).json({ message: "Failed to fetch trending events", error: error.message });
   }
 };
-
-module.exports = { registerEvent, getRegistrationsByEvent, getHistory, getTrendingEvents };

@@ -1,8 +1,9 @@
-const express = require('express');
-const authenticateJWT = require('../middleware/authenticateJWT');
+import express from 'express';
+import { generateDescription } from '../controllers/aiController.js';
+import { authenticateJWT } from '../middleware/authenticateJWT.js';
+
 const router = express.Router();
-const aiController = require('../controllers/aiController');
 
-router.post('/generate-description', authenticateJWT, aiController.generateDescription);
+router.post('/generate-description', authenticateJWT, generateDescription);
 
-module.exports = router;
+export default router;

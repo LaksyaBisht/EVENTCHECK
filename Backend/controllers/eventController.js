@@ -1,6 +1,6 @@
-const Event = require('../models/eventModel');
+import Event from '../models/eventModel.js';
 
-const searchEvents = async (req, res) => {
+export const searchEvents = async (req, res) => {
   const query = req.query.q;
 
   if (!query) {
@@ -25,12 +25,13 @@ const searchEvents = async (req, res) => {
   }
 };
 
-const getAllEvents = async (req, res) => {
+export const getAllEvents = async (req, res) => {
   try {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    const results = await Event.find({event_date: { $gt: today}
+    const results = await Event.find({
+      event_date: { $gt: today }
     });
     res.status(200).json(results);
   } catch (err) {
@@ -38,29 +39,28 @@ const getAllEvents = async (req, res) => {
   }
 };
 
-const getEventByName = async (req, res) => {
-    const event_name = req.params.event_name;
-  
-    try {
-      const result = await Event.findOne({ event_name });
-      if (!result) {
-        return res.status(404).json({ message: 'Event not found' });
-      }
-      res.status(200).json(result);
-    } catch (err) {
-      console.error(err); 
-      res.status(500).json({ message: 'Error fetching event details' });
-    }
-  };
-  
+export const getEventByName = async (req, res) => {
+  const event_name = req.params.event_name;
 
-const createEvent = async (req, res) => {
+  try {
+    const result = await Event.findOne({ event_name });
+    if (!result) {
+      return res.status(404).json({ message: 'Event not found' });
+    }
+    res.status(200).json(result);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Error fetching event details' });
+  }
+};
+
+export const createEvent = async (req, res) => {
   try {
     const userId = req.user?.id;
 
     const eventData = {
       ...req.body,
-      created_by: userId, 
+      created_by: userId,
     };
 
     const newEvent = new Event(eventData);
@@ -72,43 +72,33 @@ const createEvent = async (req, res) => {
   }
 };
 
-
-const getAdminEvents = async(req, res)=>{
+export const getAdminEvents = async (req, res) => {
   const adminId = req.user?.id;
 
-  try{
-    const events = await Event.find({created_by: adminId});
+  try {
+    const events = await Event.find({ created_by: adminId });
     res.status(200).json({
       message: "Events fetched successfully",
       data: events
     });
   }
-  catch(error){
+  catch (error) {
     console.error("Error fetching events:", error);
     res.status(500).json({ message: "Error fetching events", error: error.message });
   }
 };
 
-const deleteEvent = async(req, res)=>{
-  try{
+export const deleteEvent = async (req, res) => {
+  try {
     const eventName = req.params.event_name;
-    const event = await Event.findOneAndDelete({event_name: eventName});
+    const event = await Event.findOneAndDelete({ event_name: eventName });
     if (!event) {
       return res.status(404).json({ success: false, message: "Event not found" });
     }
 
     res.status(200).json({ success: true, message: "Event deleted successfully" });
-  } 
+  }
   catch (error) {
     res.status(500).json({ success: false, message: "Failed to delete event", error: error.message });
   }
-};
-
-module.exports = {
-  searchEvents,
-  getAllEvents,
-  getEventByName,
-  createEvent,
-  getAdminEvents,
-  deleteEvent
 };

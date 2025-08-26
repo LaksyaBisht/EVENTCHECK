@@ -1,8 +1,8 @@
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
-const User = require('../models/userModel'); 
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
+import User from '../models/userModel.js';
 
-const registerUser = async (req, res) => {
+export const registerUser = async (req, res) => {
   const { username, email, password, role, clubName } = req.body;
 
   try {
@@ -19,10 +19,10 @@ const registerUser = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const newUserData = {
-    username,
-    email,
-    password: hashedPassword,
-    role
+      username,
+      email,
+      password: hashedPassword,
+      role
     };
     if (role === 'admin') {
       newUserData.clubName = clubName;
@@ -38,7 +38,7 @@ const registerUser = async (req, res) => {
   }
 };
 
-const loginUser = async (req, res) => {
+export const loginUser = async (req, res) => {
   const { email, password } = req.body;
 
   try {
@@ -56,9 +56,9 @@ const loginUser = async (req, res) => {
 
     const token = jwt.sign(
       {
-        id:user._id,
-        username: user.username, 
-        email: user.email, 
+        id: user._id,
+        username: user.username,
+        email: user.email,
         role: user.role,
         clubName: user.clubName || null
       },
@@ -66,7 +66,7 @@ const loginUser = async (req, res) => {
       { expiresIn: '1h' }
     );
 
-     res.status(200).json({
+    res.status(200).json({
       message: 'Login successful',
       token,
       user: {
@@ -77,14 +77,14 @@ const loginUser = async (req, res) => {
         clubName: user.clubName || null
       }
     });
-    
+
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Error logging in user' });
   }
 };
 
-const getMyProfile = async (req, res) => {
+export const getMyProfile = async (req, res) => {
   try {
     const userId = req.user.id;
 
@@ -100,7 +100,7 @@ const getMyProfile = async (req, res) => {
   }
 };
 
-const profileChange = async (req, res) => {
+export const profileChange = async (req, res) => {
   try {
     const userId = req.user.id;
     const updates = req.body;
@@ -139,10 +139,10 @@ const profileChange = async (req, res) => {
       userId,
       updates,
       {
-        new: true,           
-        runValidators: true, 
+        new: true,
+        runValidators: true,
       }
-    ).select('-password -created_at'); 
+    ).select('-password -created_at');
 
     if (!updatedUser) {
       return res.status(404).json({ error: 'User not found' });
@@ -164,26 +164,17 @@ const profileChange = async (req, res) => {
   }
 };
 
-const profileVisit = async (req, res) => {
+export const profileVisit = async (req, res) => {
   try {
     const username = req.params.username;
 
-    const user = await User.findOne({username}).select('-password -created_at');
+    const user = await User.findOne({ username }).select('-password -created_at');
 
-    if(!user) {
-      return res.status(404).json({message: 'User not found'});
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
     }
     res.status(200).json(user);
   } catch (err) {
     res.status(500).json({ message: 'Error fetching profile details', error: err.message });
   }
-};
-
-
-module.exports = {
-  registerUser,
-  loginUser,
-  getMyProfile,
-  profileChange, 
-  profileVisit
 };

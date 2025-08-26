@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const registerEventSchema = new mongoose.Schema({
     event: {
@@ -7,7 +7,7 @@ const registerEventSchema = new mongoose.Schema({
         required: true
     },
     name: {
-        type: String, 
+        type: String,
         required: true,
         maxlength: 255
     },
@@ -23,7 +23,7 @@ const registerEventSchema = new mongoose.Schema({
         maxlength: 255
     },
     phone: {
-        type:String, 
+        type: String,
         required: true,
         maxlength: 255,
         match: [/^\d{10}$/, 'Invalid phone number']
@@ -33,7 +33,7 @@ const registerEventSchema = new mongoose.Schema({
         required: true,
     },
     teamMembers: {
-        type: String, 
+        type: String,
         maxlength: 255
     },
     userId: {
@@ -41,11 +41,12 @@ const registerEventSchema = new mongoose.Schema({
         ref: 'users',
         required: true
     },
-    register_at: { 
-        type: Date, 
-        default: Date.now 
+    register_at: {
+        type: Date,
+        default: Date.now
     }
 })
 
 const registerEvents = mongoose.model('registerEvents', registerEventSchema);
-module.exports = registerEvents;
+
+export default registerEvents;

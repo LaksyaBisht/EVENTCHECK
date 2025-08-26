@@ -1,61 +1,61 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const eventSchema = new mongoose.Schema({
-  event_name: { 
-    type: String, 
-    required: true, 
-    maxlength: 255 
+  event_name: {
+    type: String,
+    required: true,
+    maxlength: 255
   },
-  event_date: { 
-    type: Date, 
-    required: true  
+  event_date: {
+    type: Date,
+    required: true
   },
-  event_description: { 
-    type: String 
+  event_description: {
+    type: String
   },
-  club_name: { 
-    type: String, 
-    maxlength: 255 
+  club_name: {
+    type: String,
+    maxlength: 255
   },
-  venue: { 
-    type: String, 
-    maxlength: 255 
+  venue: {
+    type: String,
+    maxlength: 255
   },
-  team_size: { 
-    type: Number, 
-    default: 1, 
-    min: 1 
+  team_size: {
+    type: Number,
+    default: 1,
+    min: 1
   },
-  organizer_email: { 
-    type: String, 
-    maxlength: 255 
+  organizer_email: {
+    type: String,
+    maxlength: 255
   },
-  rewards: { 
-    type: String, 
-    maxlength: 255 
+  rewards: {
+    type: String,
+    maxlength: 255
   },
-  poster: { 
-    type: String, 
-    default: '' 
+  poster: {
+    type: String,
+    default: ''
   },
-  created_by: { 
-    type: String, 
-    maxlength: 255 
+  created_by: {
+    type: String,
+    maxlength: 255
   },
-  created_at: { 
-    type: Date, 
-    default: Date.now 
+  created_at: {
+    type: Date,
+    default: Date.now
   },
-  updated_at: { 
-    type: Date, 
-    default: Date.now 
+  updated_at: {
+    type: Date,
+    default: Date.now
   },
-   tags: {
+  tags: {
     type: [String],
-    default:[]
+    default: []
   }
 });
 
 const events = mongoose.model('events', eventSchema);
 
-module.exports = events;
+export default events;
