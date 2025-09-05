@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { loginUser, signupUser } from '../utils/api';
+import toast from 'react-hot-toast';   
 
 const AuthContext = createContext();
 
@@ -17,7 +18,6 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Check if user is logged in on app start
     const savedUser = localStorage.getItem('eventcheck_user');
     if (savedUser) {
       try {
@@ -38,8 +38,10 @@ export const AuthProvider = ({ children }) => {
       setUser(userData);
       setIsAuthenticated(true);
       localStorage.setItem('eventcheck_user', JSON.stringify(userData));
+      toast.success('Logged in successfully! 🎉');   
       return { success: true };
     } catch (error) {
+      toast.error(error.message || 'Failed to login');   
       return { success: false, error: error.message };
     }
   };
@@ -47,8 +49,10 @@ export const AuthProvider = ({ children }) => {
   const signup = async (userData) => {
     try {
       await signupUser(userData);
+      toast.success('Signup successful! 🎉');   
       return { success: true };
     } catch (error) {
+      toast.error(error.message || 'Failed to signup');   
       return { success: false, error: error.message };
     }
   };
@@ -57,6 +61,7 @@ export const AuthProvider = ({ children }) => {
     setUser(null);
     setIsAuthenticated(false);
     localStorage.removeItem('eventcheck_user');
+    toast.success('Logged out successfully! 👋');   
   };
 
   const isAdmin = user?.role === 'admin';

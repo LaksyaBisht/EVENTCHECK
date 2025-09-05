@@ -6,65 +6,58 @@ import { getEvents, searchEvents, registerForEvent } from '../utils/api';
 import Navbar from '../components/Navbar';
 import EventCard from '../components/EventCard';
 import EventDetail from '../components/EventDetail';
+import toast from 'react-hot-toast';  
 
 const Home = () => {
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
-  const [events, setEvents] = useState([]); //all events
-  const [filteredEvents, setFilteredEvents] = useState([]);   //filtered events
-  const [loading, setLoading] = useState(true);   //loading state
-  const [selectedEvent, setSelectedEvent] = useState(null);   //view selected event details
-  const [searchQuery, setSearchQuery] = useState('');   //search keyword
+  const [events, setEvents] = useState([]);
+  const [filteredEvents, setFilteredEvents] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedEvent, setSelectedEvent] = useState(null);
+  const [searchQuery, setSearchQuery] = useState('');
 
-  //fetch events on page load
   useEffect(() => {
     fetchEvents();
   }, []);
 
-
-  //show fetch events
   const fetchEvents = async () => {
     try {
       setLoading(true);
-      const data = await getEvents(); //calls backend via getEvents()
+      const data = await getEvents();
       setEvents(data);
-      setFilteredEvents(data);  //set both events and filtered events to fetched data 
+      setFilteredEvents(data);
     } catch (error) {
-      console.error('Error fetching events:', error);
+      toast.error('Error fetching events');   
     } finally {
       setLoading(false);
     }
   };
 
-
-  //show search events
   const handleSearch = async (query) => {
-    setSearchQuery(query);// search query
+    setSearchQuery(query);
     try {
-      const results = await searchEvents(query);// from backend
-      setFilteredEvents(results);//selects the events returned from backend through search query
+      const results = await searchEvents(query);
+      setFilteredEvents(results);
     } catch (error) {
-      console.error('Error searching events:', error);
+      toast.error('Error searching events');   
     }
   };
 
-  //click on an event card
   const handleEventClick = (event) => {
     if (!isAuthenticated) {
-      navigate('/login', { state: { from: '/', eventId: event.id } });//redirect to login if not authenticated
+      navigate('/login', { state: { from: '/', eventId: event.id } });
       return;
     }
     setSelectedEvent(event);
   };
 
-
-  //register button on the event detail modal
   const handleRegister = async (eventId, registrationData) => {
     try {
       await registerForEvent(eventId, registrationData);
-      alert('Registration successful!');
+      toast.success('Registration successful! 🎉');   
     } catch (error) {
-      alert('Registration failed: ' + error.message);
+      toast.error('Registration failed: ' + error.message);   
     }
   };
 

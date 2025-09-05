@@ -5,6 +5,7 @@ import { useAuth } from '../context/AuthContext';
 import { getAdminEvents, deleteEvent } from '../utils/api';
 import Navbar from '../components/Navbar';
 import StudentListModal from '../components/StudentListModal';
+import toast from 'react-hot-toast';
 
 const Registrations = () => {
   const { user } = useAuth();
@@ -23,6 +24,7 @@ const Registrations = () => {
       const data = await getAdminEvents();
       setEvents(data);
     } catch (error) {
+      toast.error('Failed to fetch events');
       console.error('Error fetching events:', error);
     } finally {
       setLoading(false);
@@ -38,9 +40,9 @@ const Registrations = () => {
     try {
       await deleteEvent(eventId, user.id);
       setEvents(events.filter(event => event._id !== eventId));
-      alert('Event deleted successfully');
+      toast.success('Event deleted successfully');
     } catch (error) {
-      alert('Failed to delete event: ' + error.message);
+      toast.error(error.message || 'Failed to delete event');
     } finally {
       setDeleteLoading(null);
     }

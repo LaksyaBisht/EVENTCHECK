@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import { getMyProfile, getProfileByUsername, updateProfile } from '../utils/api';
-import { Edit, Save, X, Loader2, Shield, Building } from 'lucide-react';
+import { Edit, Save, X, Loader2, Shield } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 const Profile = () => {
   const { username: routeUsername } = useParams();
@@ -12,16 +13,13 @@ const Profile = () => {
   const [formData, setFormData] = useState({});
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
   const [saving, setSaving] = useState(false);
 
   const isOwnProfile = !routeUsername;
 
-  // --- Fetch Profile ---
   useEffect(() => {
     const fetchProfile = async () => {
       setLoading(true);
-      setError('');
       try {
         const data = routeUsername
           ? await getProfileByUsername(routeUsername)
@@ -30,7 +28,7 @@ const Profile = () => {
         setUser(data);
         setFormData({ ...data });
       } catch (err) {
-        setError(err.response?.data?.message || 'Failed to load profile');
+        toast.error(err.response?.data?.message || 'Failed to load profile');
       } finally {
         setLoading(false);
       }
@@ -39,28 +37,27 @@ const Profile = () => {
     fetchProfile();
   }, [routeUsername]);
 
-  // --- Handle Input Change ---
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  // --- Save Changes ---
   const handleSave = async () => {
     setSaving(true);
-    setError('');
     const updatedData = { username: formData.username };
 
-    if(user.role==='admin' && formData.club!==undefined)
-        updatedData.clubName = formData.clubName;
+    if (user.role === 'admin' && formData.clubName !== undefined) {
+      updatedData.clubName = formData.clubName;
+    }
 
     try {
       const updated = await updateProfile(updatedData);
       setUser(updated);
-      setFormData(updated)
+      setFormData(updated);
       setIsEditing(false);
+      toast.success('Profile updated successfully');
     } catch (err) {
-      setError(err.response?.data?.error || 'Failed to save changes');
+      toast.error(err.response?.data?.error || 'Failed to save changes');
     } finally {
       setSaving(false);
     }
@@ -69,10 +66,8 @@ const Profile = () => {
   const handleCancel = () => {
     setFormData({ ...user });
     setIsEditing(false);
-    setError('');
   };
 
-  // --- Loading ---
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50">
@@ -80,25 +75,6 @@ const Profile = () => {
         <div className="flex justify-center items-center h-64">
           <Loader2 className="h-8 w-8 animate-spin text-primary-600" />
           <span className="ml-3 text-lg text-gray-600">Loading profile...</span>
-        </div>
-      </div>
-    );
-  }
-
-  // --- Error ---
-  if (error && !loading) {
-    return (
-      <div className="min-h-screen bg-gray-50">
-        <Navbar />
-        <div className="max-w-2xl mx-auto p-6 mt-10 bg-white rounded-lg shadow">
-          <h2 className="text-red-600 text-xl">Error</h2>
-          <p>{error}</p>
-          <button
-            onClick={() => navigate(-1)}
-            className="mt-4 text-primary-600 hover:underline"
-          >
-            ← Go Back
-          </button>
         </div>
       </div>
     );
@@ -238,13 +214,6 @@ const Profile = () => {
                 </div>
               )}
             </div>
-
-            {/* Error Message */}
-            {error && (
-              <div className="mt-4 p-3 bg-red-50 text-red-600 text-sm rounded-md border border-red-200">
-                {error}
-              </div>
-            )}
           </div>
         </div>
       </main>

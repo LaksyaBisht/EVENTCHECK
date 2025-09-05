@@ -2,8 +2,8 @@ import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import PrivateRoute from './components/PrivateRoute';
+import {Toaster} from 'react-hot-toast';
 
-// Pages
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
@@ -18,6 +18,7 @@ function App() {
   return (
     <AuthProvider>
       <div className="App">
+        <Toaster position="top-right" />
         <Routes>
           {/* Public Routes */}
           <Route path="/" element={<Home />} />

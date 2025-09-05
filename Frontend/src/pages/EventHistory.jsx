@@ -3,6 +3,7 @@ import { Calendar, MapPin, Users, History } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { getUserRegistrations } from '../utils/api';
 import Navbar from '../components/Navbar';
+import toast from 'react-hot-toast';   
 
 const EventHistory = () => {
   const [registrations, setRegistrations] = useState([]);
@@ -16,10 +17,9 @@ const EventHistory = () => {
     try {
       setLoading(true);
       const data = await getUserRegistrations();
-      console.log(data);
       setRegistrations(data.events);
     } catch (error) {
-      console.error('Error fetching registrations:', error);
+      toast.error('Error fetching your registrations');   
     } finally {
       setLoading(false);
     }

@@ -6,6 +6,7 @@ import { getTrendingEvents, registerForEvent } from '../utils/api';
 import Navbar from '../components/Navbar';
 import EventCard from '../components/EventCard';
 import EventDetail from '../components/EventDetail';
+import toast from 'react-hot-toast'; 
 
 const Explore = () => {
   const { isAuthenticated } = useAuth();
@@ -25,7 +26,7 @@ const Explore = () => {
         const data = await getTrendingEvents(); 
         setEvents(data); 
       } catch (error) {
-        console.error('Error fetching trending events:', error);
+        toast.error('Error fetching trending events');
       } finally {
         setLoading(false);
       }
@@ -45,13 +46,12 @@ const Explore = () => {
   const handleRegister = async (eventId, registrationData) => {
     try {
       await registerForEvent(eventId, registrationData);
-      alert('Registration successful!'); 
+      toast.success('Registration successful! 🎉');   
     } catch (error) {
-      alert('Registration failed: ' + error.message);
+      toast.error('Registration failed: ' + error.message);   
     }
   };
 
-  // Carousel navigation functions
   const handleNext = () => {
     if (currentIndex < events.length - 1) {
       setCurrentIndex(currentIndex + 1);
@@ -69,22 +69,22 @@ const Explore = () => {
       <Navbar /> 
       
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Header content with "Welcome to" and a larger gap below */}
+        {/* Header */}
         <p className="text-sm text-gray-500 font-medium tracking-wide">Welcome to</p>
         <h1 className="text-4xl font-extrabold text-gray-900 mb-4 tracking-tight">
           EventCheck Explore
         </h1>
 
-        {/* Section title for Trending Events with increased top margin */}
+        {/* Trending Events */}
         <div className="mt-12 mb-8">
           <h2 className="text-2xl font-bold text-gray-800">
             Trending Events
           </h2>
         </div>
 
-        {/* The Carousel Container */}
+        {/* Carousel */}
         <div className="relative">
-          {/* Previous button */}
+          {/* Prev button */}
           <button
             onClick={handlePrev}
             className={`absolute top-1/2 -left-4 z-10 -translate-y-1/2 p-2 rounded-full bg-white shadow-md text-gray-800 transition-transform hover:scale-110 ${currentIndex === 0 ? 'hidden' : ''}`}
@@ -100,11 +100,11 @@ const Explore = () => {
             <ChevronRight size={24} />
           </button>
 
-          {/* The Events Track - this is what moves */}
+          {/* Events Track */}
           <div
             ref={carouselRef}
             className="flex space-x-4 transition-transform duration-300"
-            style={{ transform: `translateX(-${currentIndex * 336}px)` }} // 336px = 320px (card width) + 16px (space-x-4)
+            style={{ transform: `translateX(-${currentIndex * 336}px)` }}
           >
             {loading ? (
               <div className="flex items-center justify-center py-12 w-full">
@@ -135,7 +135,7 @@ const Explore = () => {
         </div>
       </main>
 
-      {/* Event Detail Modal, conditionally rendered */}
+      {/* Event Detail Modal */}
       {selectedEvent && (
         <EventDetail
           event={selectedEvent}

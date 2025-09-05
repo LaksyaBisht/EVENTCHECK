@@ -5,22 +5,21 @@ import { useAuth } from '../context/AuthContext';
 import { createEvent } from '../utils/api';
 import Navbar from '../components/Navbar';
 import EventForm from '../components/EventForm';
+import toast from 'react-hot-toast';  
 
 const CreateEvent = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
 
-
-  // create event button on the create event form
   const handleSubmit = async (eventData) => {
     setLoading(true);
     try {
-      await createEvent(eventData); //post all event details to backend and also user id to know which user is posting
-      alert('Event created successfully!');
+      await createEvent(eventData); 
+      toast.success('Event created successfully! 🎉');   
       navigate('/');
     } catch (error) {
-      alert('Failed to create event: ' + error.message);
+      toast.error('Failed to create event: ' + error.message);   
     } finally {
       setLoading(false);
     }

@@ -30,7 +30,6 @@ const EventDetail = ({ event, onClose, onRegister }) => {
   const handleRegisterClick = () => {
     if (!isAuthenticated) {
       onClose();
-      // This will be handled by the parent component to redirect to login
       return;
     }
     setShowRegistrationForm(true);
@@ -147,7 +146,6 @@ const EventDetail = ({ event, onClose, onRegister }) => {
             </div>
           </div>
 
-          {/* Description */}
           <div>
             <h3 className="text-lg font-semibold text-gray-900 mb-3">
               About This Event
@@ -157,7 +155,6 @@ const EventDetail = ({ event, onClose, onRegister }) => {
             </p>
           </div>
 
-          {/* Registration Button */}
           {!isAdmin && (
             <div className="pt-6 border-t border-gray-200">
               <button
